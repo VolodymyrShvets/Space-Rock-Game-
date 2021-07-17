@@ -15,8 +15,8 @@ public class SimpleFramework extends JFrame implements Runnable {
     private BufferStrategy bs;
     private volatile boolean running;
     private Thread gameThread;
-    private RelativeMouseInput mouse;
-    private SimpleKeyboardInput keyboard;
+    protected RelativeMouseInput mouse;
+    protected SimpleKeyboardInput keyboard;
     private Canvas canvas;
 
     protected Color appBackground = Color.BLACK;
