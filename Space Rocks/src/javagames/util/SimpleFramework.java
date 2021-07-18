@@ -1,23 +1,18 @@
 package javagames.util;
 
-import javagames.timeandspace.CannonExample;
-
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+import java.awt.event.*;
 import java.awt.image.BufferStrategy;
 
 public class SimpleFramework extends JFrame implements Runnable {
-    private FrameRate frameRate;
+    protected FrameRate frameRate;
     private BufferStrategy bs;
     private volatile boolean running;
     private Thread gameThread;
     protected RelativeMouseInput mouse;
     protected SimpleKeyboardInput keyboard;
-    private Canvas canvas;
+    protected Canvas canvas;
 
     protected Color appBackground = Color.BLACK;
     protected Color appBorder = Color.LIGHT_GRAY;
@@ -25,8 +20,8 @@ public class SimpleFramework extends JFrame implements Runnable {
     protected Font appFont = new Font("Courier New", Font.PLAIN, 14);
     protected String appTitle = "TBD-Title";
     protected float appBorderScale = 0.8f;
-    protected float appWidth = 640;
-    protected float appHeight = 480;
+    protected int appWidth = 640;
+    protected int appHeight = 480;
     protected float appWorldWidth = 2.0f;
     protected float appWorldHeight = 2.0f;
     protected long appSleep = 10L;
@@ -44,22 +39,22 @@ public class SimpleFramework extends JFrame implements Runnable {
 
         if (appMaintainRatio) {
             getContentPane().setBackground(appBorder);
-            setSize((int) appWidth, (int) appHeight);
+            setSize(appWidth, appHeight);
             setLayout(null);
             getContentPane().addComponentListener(new ComponentAdapter() {
-                @Override
                 public void componentResized(ComponentEvent e) {
                     onComponentResized(e);
                 }
             });
         } else {
-            canvas.setSize((int) appWidth, (int) appHeight);
+            canvas.setSize(appWidth, appHeight);
             pack();
         }
 
         setTitle(appTitle);
         keyboard = new SimpleKeyboardInput();
         canvas.addKeyListener(keyboard);
+
         mouse = new RelativeMouseInput(canvas);
         canvas.addMouseListener(mouse);
         canvas.addMouseMotionListener(mouse);
@@ -80,6 +75,7 @@ public class SimpleFramework extends JFrame implements Runnable {
         int vh = (int) (size.height * appBorderScale);
         int vx = (size.width - vw) / 2;
         int vy = (size.height - vh) / 2;
+
         int newW = vw;
         int newH = (int) (vw * appWorldHeight / appWorldWidth);
         if (newH > vh) {
@@ -200,13 +196,11 @@ public class SimpleFramework extends JFrame implements Runnable {
 
     protected static void launchApp(final SimpleFramework app) {
         app.addWindowListener(new WindowAdapter() {
-            @Override
             public void windowClosing(WindowEvent e) {
                 app.onWindowClosing();
             }
         });
         SwingUtilities.invokeLater(new Runnable() {
-            @Override
             public void run() {
                 app.createAndShowGUI();
             }

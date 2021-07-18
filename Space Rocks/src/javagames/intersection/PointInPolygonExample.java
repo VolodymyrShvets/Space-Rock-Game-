@@ -45,7 +45,7 @@ public class PointInPolygonExample extends SimpleFramework {
     @Override
     protected void processInput(float delta) {
         super.processInput(delta);
-        mousePos = getWorldMousePosition();
+        mousePos = getRelativeWorldMousePosition();
         //draw polygon for algorithm testing
         if (keyboard.keyDownOnce(KeyEvent.VK_SPACE)) {
             winding = !winding;
