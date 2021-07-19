@@ -130,7 +130,7 @@ public class Matrix3x3f {
     public static Matrix3x3f rotate(float rad) {
         return new Matrix3x3f(new float[][]{
                 {(float) Math.cos(rad), (float) Math.sin(rad), 0.0f},
-                {(float) Math.sin(rad), (float) Math.cos(rad), 0.0f},
+                {(float) -Math.sin(rad), (float) Math.cos(rad), 0.0f},
                 {0.0f, 0.0f, 1.0f}
         });
     }
