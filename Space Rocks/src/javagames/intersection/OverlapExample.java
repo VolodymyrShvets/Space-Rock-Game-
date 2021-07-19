@@ -1,10 +1,8 @@
 package javagames.intersection;
 
-import javagames.util.*;
-
 import java.awt.*;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
+import javagames.util.*;
 
 public class OverlapExample extends SimpleFramework {
     // mouse variables
@@ -34,15 +32,16 @@ public class OverlapExample extends SimpleFramework {
     private boolean circle1Moving;
 
     public OverlapExample() {
-        appWidth = 640;
         appHeight = 640;
-        appTitle = "OverlapExample";
+        appWidth = 640;
+        appTitle = "Overlap Example";
         appBackground = Color.WHITE;
         appFPSColor = Color.BLACK;
     }
 
     protected void initialize() {
         super.initialize();
+        mousePos = new Vector2f();
         min0 = new Vector2f(-0.25f, -0.25f);
         max0 = new Vector2f(0.25f, 0.25f);
         min1 = new Vector2f(-0.3f, -0.3f);
@@ -68,7 +67,7 @@ public class OverlapExample extends SimpleFramework {
         }
         // convert screen coordinates to world coordinates
         // for intersection testing
-        Vector2f pos = getRelativeWorldMousePosition();
+        Vector2f pos = getWorldMousePosition();
         mouseDelta = pos.sub(mousePos);
         mousePos = pos;
         clicked = mouse.buttonDownOnce(MouseEvent.BUTTON1);
@@ -77,7 +76,7 @@ public class OverlapExample extends SimpleFramework {
 
     @Override
     protected void updateObjects(float delta) {
-        super.updateObjects(delta);
+        //super.updateObjects(delta);
         // calculate the AABB minimum and maximum values
         Matrix3x3f mat = Matrix3x3f.translate(rect0Pos.x, rect0Pos.y);
         min0Cpy = mat.mul(min0);
@@ -98,10 +97,10 @@ public class OverlapExample extends SimpleFramework {
             rect1Moving = true;
         }
         if (clicked && pointInCircle(mousePos, c0Pos, r0)) {
-            rect0Moving = true;
+            circle0Moving = true;
         }
         if (clicked && pointInCircle(mousePos, c1Pos, r1)) {
-            rect1Moving = true;
+            circle1Moving = true;
         }
         rect0Moving = rect0Moving && dragging;
         if (rect0Moving) {
@@ -119,7 +118,6 @@ public class OverlapExample extends SimpleFramework {
         if (circle1Moving) {
             c1Pos = c1Pos.add(mouseDelta);
         }
-
         rect0Collision = false;
         rect1Collision = false;
         circle0Collision = false;
@@ -191,18 +189,16 @@ public class OverlapExample extends SimpleFramework {
     @Override
     protected void render(Graphics g) {
         super.render(g);
-
         // render instructions
-        g.drawString("Dragging: " + dragging, 20, 50);
-        g.drawString("Click and hold to drag shapes", 20, 65);
-        g.drawString("Press [SPACE] to reset", 20, 80);
-
+        g.drawString("Draging: " + dragging, 20, 35);
+        g.drawString("Click and hold to drag shapes", 20, 50);
+        g.drawString("Press [SPACE] to reset", 20, 65);
         // render objects
-        g.setColor(rect0Collision ? Color.BLACK : Color.RED);
+        g.setColor(rect0Collision ? Color.BLACK : Color.GREEN);
         drawAABB(g, min0Cpy, max0Cpy);
         g.setColor(rect1Collision ? Color.BLACK : Color.BLUE);
         drawAABB(g, min1Cpy, max1Cpy);
-        g.setColor(circle0Collision ? Color.BLACK : Color.GREEN);
+        g.setColor(circle0Collision ? Color.BLACK : Color.YELLOW);
         drawOval(g, c0, r0);
         g.setColor(circle1Collision ? Color.BLACK : Color.MAGENTA);
         drawOval(g, c1, r1);
@@ -211,12 +207,10 @@ public class OverlapExample extends SimpleFramework {
     // draw the AABB
     private void drawAABB(Graphics g, Vector2f min, Vector2f max) {
         Matrix3x3f view = getViewportTransform();
-
         Vector2f topLeft = new Vector2f(min.x, max.y);
         topLeft = view.mul(topLeft);
         Vector2f bottomRight = new Vector2f(max.x, min.y);
         bottomRight = view.mul(bottomRight);
-
         int rectX = (int) topLeft.x;
         int rectY = (int) topLeft.y;
         int rectWidth = (int) (bottomRight.x - topLeft.x);
@@ -227,12 +221,10 @@ public class OverlapExample extends SimpleFramework {
     // draw the circle
     private void drawOval(Graphics g, Vector2f center, float radius) {
         Matrix3x3f view = getViewportTransform();
-
         Vector2f topLeft = new Vector2f(center.x - radius, center.y + radius);
         topLeft = view.mul(topLeft);
         Vector2f bottomRight = new Vector2f(center.x + radius, center.y - radius);
         bottomRight = view.mul(bottomRight);
-
         int circleX = (int) topLeft.x;
         int circleY = (int) topLeft.y;
         int circleWidth = (int) (bottomRight.x - topLeft.x);

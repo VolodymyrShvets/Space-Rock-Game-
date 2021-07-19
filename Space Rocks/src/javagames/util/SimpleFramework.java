@@ -1,19 +1,19 @@
 package javagames.util;
 
-import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferStrategy;
+import javax.swing.JFrame;
+import javax.swing.SwingUtilities;
 
 public class SimpleFramework extends JFrame implements Runnable {
-    protected FrameRate frameRate;
     private BufferStrategy bs;
     private volatile boolean running;
     private Thread gameThread;
+    protected FrameRate frameRate;
+    protected Canvas canvas;
     protected RelativeMouseInput mouse;
     protected SimpleKeyboardInput keyboard;
-    protected Canvas canvas;
-
     protected Color appBackground = Color.BLACK;
     protected Color appBorder = Color.LIGHT_GRAY;
     protected Color appFPSColor = Color.GREEN;
@@ -36,7 +36,6 @@ public class SimpleFramework extends JFrame implements Runnable {
         canvas.setIgnoreRepaint(true);
         getContentPane().add(canvas);
         setLocationByPlatform(true);
-
         if (appMaintainRatio) {
             getContentPane().setBackground(appBorder);
             setSize(appWidth, appHeight);
@@ -50,21 +49,17 @@ public class SimpleFramework extends JFrame implements Runnable {
             canvas.setSize(appWidth, appHeight);
             pack();
         }
-
         setTitle(appTitle);
         keyboard = new SimpleKeyboardInput();
         canvas.addKeyListener(keyboard);
-
         mouse = new RelativeMouseInput(canvas);
         canvas.addMouseListener(mouse);
         canvas.addMouseMotionListener(mouse);
         canvas.addMouseWheelListener(mouse);
-
         setVisible(true);
         canvas.createBufferStrategy(2);
         bs = canvas.getBufferStrategy();
         canvas.requestFocus();
-
         gameThread = new Thread(this);
         gameThread.start();
     }
@@ -75,14 +70,13 @@ public class SimpleFramework extends JFrame implements Runnable {
         int vh = (int) (size.height * appBorderScale);
         int vx = (size.width - vw) / 2;
         int vy = (size.height - vh) / 2;
-
         int newW = vw;
         int newH = (int) (vw * appWorldHeight / appWorldWidth);
         if (newH > vh) {
             newW = (int) (vh * appWorldWidth / appWorldHeight);
             newH = vh;
         }
-        //center
+        // center
         vx += (vw - newW) / 2;
         vy += (vh - newH) / 2;
         canvas.setLocation(vx, vy);
@@ -91,12 +85,14 @@ public class SimpleFramework extends JFrame implements Runnable {
 
     protected Matrix3x3f getViewportTransform() {
         return Utility.createViewport(
-                appWorldWidth, appWorldHeight, canvas.getWidth(), canvas.getHeight());
+                appWorldWidth, appWorldHeight, canvas.getWidth(), canvas.getHeight()
+        );
     }
 
     protected Matrix3x3f getReverseViewportTransform() {
         return Utility.createReverseViewport(
-                appWorldWidth, appWorldHeight, canvas.getWidth(), canvas.getHeight());
+                appWorldWidth, appWorldHeight, canvas.getWidth(), canvas.getHeight()
+        );
     }
 
     protected Vector2f getWorldMousePosition() {
@@ -188,8 +184,8 @@ public class SimpleFramework extends JFrame implements Runnable {
         try {
             running = false;
             gameThread.join();
-        } catch (InterruptedException ex) {
-            ex.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
         System.exit(0);
     }
